@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie List Manager</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1 { 
+  text-align: center;
+  color: white;
+  font-size: 2.5em;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Auth Sections */
+.auth-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+#register-section, #login-section {
+  flex: 1;
+  min-width: 280px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#register-section h2 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+}
+
+#login-section h2 {
+  color: #764ba2;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+}
+
+/* Movies Section */
+#movies-section {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#movies-section > h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+  text-align: center;
+}
+
+#username {
+  color: #667eea;
+  font-weight: bold;
+}
+
+/* Subsections */
+.section {
+  margin: 20px 0;
+  padding: 25px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+#add-movie-section {
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  border-color: #00acc1;
+}
+
+#my-movies-section {
+  background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+  border-color: #7cb342;
+}
+
+#fav-section {
+  background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+  border-color: #fbc02d;
+}
+
+h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.4em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#add-movie-section h3::before {
+  content: "🎬";
+  font-size: 1.2em;
+}
+
+#my-movies-section h3::before {
+  content: "📽️";
+  font-size: 1.2em;
+}
+
+#fav-section h3::before {
+  content: "⭐";
+  font-size: 1.2em;
+}
+
+/* Input Fields */
+input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+input::placeholder {
+  color: #999;
+}
+
+/* Buttons */
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 8px;
+  margin-top: 5px;
+}
+
+#register-section button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 100%;
+}
+
+#login-section button {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: white;
+  width: 100%;
+}
+
+#movies-section > button {
+  background: #f44336;
+  color: white;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+#add-movie-section button {
+  background: #00acc1;
+  color: white;
+}
+
+#my-movies-section > button {
+  background: #7cb342;
+  color: white;
+}
+
+#fav-section > button {
+  background: #fbc02d;
+  color: #333;
+}
+
+.movie-actions button {
+  background: #f44336;
+  color: white;
+  padding: 8px 16px;
+  margin-left: 8px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Movie Lists */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: white;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+li:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.movie-info {
+  flex: 1;
+  font-size: 15px;
+  color: #333;
+}
+
+.movie-info strong {
+  color: #667eea;
+}
+
+.stars {
+  color: #ffd700;
+  font-size: 1.1em;
+  margin-left: 8px;
+}
+
+/* Messages */
+.error {
+  color: #f44336;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.success {
+  color: #4caf50;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 { font-size: 2em; }
+  .auth-wrapper { flex-direction: column; }
+  li { flex-direction: column; gap: 10px; }
+  .movie-actions { width: 100%; }
+  .movie-actions button { width: 100%; margin: 5px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <!-- Register Section -->
+    <div id="register-section">
+      <h2>Register</h2>
+      <input type="text" id="register-username" placeholder="Choose a username">
+      <input type="password" id="register-password" placeholder="Choose a password">
+      <button onclick="register()">Create Account</button>
+      <p id="register-message" class="error"></p>
+    </div>
+
+    <!-- Login Section -->
+    <div id="login-section">
+      <h2>Login</h2>
+      <input type="text" id="login-username" placeholder="Enter username">
+      <input type="password" id="login-password" placeholder="Enter password">
+      <button onclick="login()">Sign In</button>
+      <p id="login-message" class="error"></p>
+    </div>
+  </div>
+
+  <!-- Movies Section -->
+  <div id="movies-section" class="hidden">
+    <h2>Welcome, <span id="username"></span>! 👋</h2>
+    <button onclick="logout()">Logout</button>
+
+    <!-- Add Movie Section -->
+    <div id="add-movie-section" class="section">
+      <h3>Add New Movie</h3>
+      <input type="text" id="movies-input" placeholder="Movie title">
+      <input type="text" id="movies-year" placeholder="Year (e.g., 2024)">
+      <input type="text" id="movies-genre" placeholder="Genre (e.g., Action, Drama)">
+      <input type="number" id="movies-rating" placeholder="Your rating (1-5)" min="1" max="5">
+      <button onclick="addMovie()">Add Movie</button>
+      <p id="movies-message"></p>
+    </div>
+
+    <!-- My Movies Section -->
+    <div id="my-movies-section" class="section">
+      <h3>My Movies Collection</h3>
+      <button onclick="showMyMovies()">Refresh List</button>
+      <button onclick="showFavouriteSection()">Show Favourites</button>
+      <ul id="movies-list"></ul>
+    </div>
+
+    <!-- Favourite Movies Section -->
+    <div id="fav-section" class="section hidden">
+      <h3>Favourite Movies</h3>
+
+      <!-- Add Favourite Movie -->
+      <input type="text" id="fav-title" placeholder="Favourite movie title">
+      <input type="text" id="fav-year" placeholder="Year">
+      <input type="text" id="fav-genre" placeholder="Genre">
+      <input type="number" id="fav-rating" placeholder="Your rating (1-5)" min="1" max="5">
+      <button onclick="addFavouriteMovie()">Add to Favourites</button>
+      <p id="fav-message"></p>
+
+      <!-- Favourite Movies List -->
+      <ul id="fav-movies-list"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+let userId = null;
+let username = null;
+
+const API_BASE_URL = window.location.origin;
+
+// ----------------- AUTH -----------------
+async function register(){
+  const username = document.getElementById('register-username').value;
+  const password = document.getElementById('register-password').value;
+  const messageEl = document.getElementById('register-message');
+  messageEl.textContent='';
+
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/register`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username,password})
+    });
+    const data = await res.json();
+    if(res.ok){
+      messageEl.className='success';
+      messageEl.textContent=`Registered! Please login.`;
+    } else {
+      messageEl.className='error';
+      messageEl.textContent=data.error || 'Registration failed';
+    }
+  } catch(e){
+    messageEl.className='error';
+    messageEl.textContent='Server connection error';
+  }
+}
+
+async function login(){
+  const usernameVal = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+  const messageEl = document.getElementById('login-message');
+  messageEl.textContent='';
+
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/login`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username:usernameVal,password})
+    });
+    const data = await res.json();
+    if(res.ok){
+      userId = data.user_id;
+      username = data.username;
+      document.getElementById('username').textContent=username;
+      document.querySelector('.auth-wrapper').style.display='none';
+      document.getElementById('movies-section').classList.remove('hidden');
+    } else {
+      messageEl.className='error';
+      messageEl.textContent=data.error || 'Login failed';
+    }
+  } catch(e){
+    messageEl.className='error';
+    messageEl.textContent='Server connection error';
+  }
+}
+
+// ----------------- HELPER -----------------
+function getStars(rating){
+  if(!rating) return '';
+  return '<span class="stars">' + '⭐'.repeat(rating) + '</span>';
+}
+
+// ----------------- REGULAR MOVIES -----------------
+async function addMovie(){
+  const title = document.getElementById('movies-input').value.trim();
+  const year = document.getElementById('movies-year').value.trim();
+  const genre = document.getElementById('movies-genre').value.trim();
+  const rating = parseInt(document.getElementById('movies-rating').value) || null;
+  const messageEl = document.getElementById('movies-message');
+  messageEl.textContent='';
+
+  if(!title){ messageEl.className='error'; messageEl.textContent='Enter a movie'; return; }
+
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/add_movie`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({user_id:userId, movie:title, year, genre, rating})
+    });
+    const data = await res.json();
+    if(res.ok){
+      messageEl.className='success';
+      messageEl.textContent=`Movie '${title}' added!`;
+      document.getElementById('movies-input').value='';
+      document.getElementById('movies-year').value='';
+      document.getElementById('movies-genre').value='';
+      document.getElementById('movies-rating').value='';
+      showMyMovies();
+    } else {
+      messageEl.className='error';
+      messageEl.textContent=data.error || 'Failed to add movie';
+    }
+  } catch(e){
+    messageEl.className='error';
+    messageEl.textContent='Server connection error';
+  }
+}
+
+async function showMyMovies(){
+  document.getElementById('fav-section').classList.add('hidden');
+  const listEl = document.getElementById('movies-list');
+  listEl.innerHTML='';
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/movies/${userId}`);
+    const data = await res.json();
+    if(res.ok){
+      if(data.movies.length === 0) {
+        listEl.innerHTML = '<li style="text-align:center; color:#999;">No movies yet. Add your first movie!</li>';
+      } else {
+        data.movies.forEach(m=>{
+          const li = document.createElement('li');
+          li.innerHTML = `<div class="movie-info"><strong>${m.title}</strong> (${m.year}) • ${m.genre} ${getStars(m.rating)}</div>
+                          <div class="movie-actions">
+                            <button onclick="deleteMovie('${m._id}')">Delete</button>
+                          </div>`;
+          listEl.appendChild(li);
+        });
+      }
+    }
+  } catch(e){
+    document.getElementById('movies-message').className='error';
+    document.getElementById('movies-message').textContent='Server connection error';
+  }
+}
+
+// ----------------- FAVOURITE MOVIES -----------------
+function showFavouriteSection(){
+  document.getElementById('fav-section').classList.remove('hidden');
+  fetchFavouriteMovies();
+}
+
+async function addFavouriteMovie(){
+  const title = document.getElementById('fav-title').value.trim();
+  const year = document.getElementById('fav-year').value.trim();
+  const genre = document.getElementById('fav-genre').value.trim();
+  const rating = parseInt(document.getElementById('fav-rating').value) || null;
+  const messageEl = document.getElementById('fav-message');
+  messageEl.textContent='';
+
+  if(!title){ messageEl.className='error'; messageEl.textContent='Enter a movie'; return; }
+
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/add_movie`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({user_id:userId, movie:title, year, genre, rating, favorite:true})
+    });
+    const data = await res.json();
+    if(res.ok){
+      messageEl.className='success';
+      messageEl.textContent=`Favourite movie '${title}' added!`;
+      document.getElementById('fav-title').value='';
+      document.getElementById('fav-year').value='';
+      document.getElementById('fav-genre').value='';
+      document.getElementById('fav-rating').value='';
+      showMyMovies();         
+      fetchFavouriteMovies(); 
+    } else {
+      messageEl.className='error';
+      messageEl.textContent=data.error || 'Failed to add favourite movie';
+    }
+  } catch(e){
+    messageEl.className='error';
+    messageEl.textContent='Server connection error';
+  }
+}
+
+async function fetchFavouriteMovies(){
+  const listEl = document.getElementById('fav-movies-list');
+  listEl.innerHTML='';
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/movies/${userId}`);
+    const data = await res.json();
+    if(res.ok){
+      const favMovies = data.movies.filter(m => m.favorite);
+      if(favMovies.length === 0) {
+        listEl.innerHTML = '<li style="text-align:center; color:#999;">No favourite movies yet. Add some!</li>';
+      } else {
+        favMovies.forEach(m=>{
+          const li = document.createElement('li');
+          li.innerHTML = `<div class="movie-info"><strong>${m.title}</strong> (${m.year}) • ${m.genre} ${getStars(m.rating)}</div>
+                          <div class="movie-actions">
+                            <button onclick="deleteMovie('${m._id}')">Delete</button>
+                          </div>`;
+          listEl.appendChild(li);
+        });
+      }
+    }
+  } catch(e){
+    document.getElementById('fav-message').className='error';
+    document.getElementById('fav-message').textContent='Server connection error';
+  }
+}
+
+// ----------------- DELETE -----------------
+async function deleteMovie(movieId){
+  try{
+    const res = await fetch(`${API_BASE_URL}/api/movies/${movieId}`, { method:'DELETE' });
+    if(res.ok){
+      showMyMovies();
+      fetchFavouriteMovies();
+    }
+  } catch(e){ alert('Delete failed'); }
+}
+
+// ----------------- LOGOUT -----------------
+function logout(){
+  userId=null; username=null;
+  document.getElementById('movies-section').classList.add('hidden');
+  document.querySelector('.auth-wrapper').style.display='flex';
+  document.getElementById('movies-list').innerHTML='';
+  document.getElementById('fav-movies-list').innerHTML='';
+  document.getElementById('movies-message').textContent='';
+  document.getElementById('fav-message').textContent='';
+}
+</script>
+</body>
+</html>
